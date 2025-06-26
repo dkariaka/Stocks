@@ -71,38 +71,7 @@ struct StockDetailView: View {
                 //StockLineChartView(stock: stock)
                 
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(alignment: .top, spacing: 12) {
-                        VStack(alignment: .leading) {
-                            Text("Open \(stock.currentPrice.o)")
-                            Text("High \(stock.currentPrice.h)")
-                            Text("Low \(stock.currentPrice.l)")
-                        }
-                        .frame(maxHeight: .infinity, alignment: .top)
-                        
-                        Divider()
-                            .frame(height: 60) 
-                        
-                        VStack(alignment: .leading) {
-                            Text("Vol \(stock.metric.volume.map {String($0)} ?? "-")")
-                            Text("P/E \(stock.metric.peNormalizedAnnual.map {String($0)} ?? "-")")
-                            Text("Mkt Cap \(stock.profile.marketCapitalization)")
-                        }
-                        .frame(maxHeight: .infinity, alignment: .top)
-                        
-                        Divider()
-                            .frame(height: 60)
-                        
-                        VStack(alignment: .leading) {
-                            Text("52W H \(stock.metric.fiftyTwoWeekHigh.map {String($0)} ?? "-")")
-                            Text("52W L \(stock.metric.fiftyTwoWeekLow.map {String($0)} ?? "-")")
-                            Text("Avg Vol \(stock.metric.tenDayAverageTradingVolume.map {String($0)} ?? "-")")
-                        }
-                        .frame(maxHeight: .infinity, alignment: .top)
-                    }
-                    .padding(.vertical, 4)
-                }
-                .frame(height: 60)
+                MetricsScrollView(stock: stock)
                 Spacer()
                 NewsList(ticker: stock.profile.ticker)
             }
