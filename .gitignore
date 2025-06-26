@@ -1,0 +1,17 @@
+# Xcode
+DerivedData/
+*.pbxuser
+xcuserdata/
+*.xcuserstate
+*.xcworkspace
+
+# SwiftPM
+.build/
+Package.resolved
+
+# Secrets
+Secrets.xcconfig
+Secrets.plist
+
+# macOS
+.DS_Store
