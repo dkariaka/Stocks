@@ -28,33 +28,12 @@ struct StockDetailView: View {
                     Text(stock.profile.name)
                         .font(.system(size: 15))
                     Spacer()
-                    Button {
-                        Task {
-                            await viewModel.addToFavorites()
-                        }
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                            .padding(8)
-                            .background(
-                                Circle()
-                                    .fill(Color(.systemGray5))
-                            )
+                    CircleButton(systemIconName: "plus") {
+                        await viewModel.addToFavorites()
                     }
-                    Button {
+                    CircleButton(systemIconName: "xmark") {
                         dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                            .padding(8)
-                            .background(
-                                Circle()
-                                    .fill(Color(.systemGray5))
-                            )
                     }
-
                 }
                 .padding(.top, 20)
                 Divider()
