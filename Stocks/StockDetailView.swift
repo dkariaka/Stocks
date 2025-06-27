@@ -22,38 +22,19 @@ struct StockDetailView: View {
                     .foregroundColor(.red)
                     .padding()
             } else {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(stock.profile.ticker)
-                        .font(.system(size: 28, weight: .bold))
-                    Text(stock.profile.name)
-                        .font(.system(size: 15))
-                    Spacer()
-                    CircleButton(systemIconName: "plus") {
-                        await viewModel.addToFavorites()
-                    }
-                    CircleButton(systemIconName: "xmark") {
-                        dismiss()
-                    }
-                }
-                .padding(.top, 20)
-                Divider()
-                HStack {
-                    Text(String(format: "%.2f", stock.currentPrice.c))
-                        .font(.title2)
-                    Text(String(format: "%.2f%%", stock.currentPrice.dp))
-                        .font(.subheadline)
-                        .foregroundColor(stock.currentPrice.dp >= 0 ? .green : .red)
-                    Spacer()
-                }
-                Text(stock.profile.exchange + " · " + stock.profile.currency)
-                Divider()
+                DetailHeaderView(stock: stock,
+                                 addToFavorites: {
+                                    await viewModel.addToFavorites()
+                                 },
+                                 dismiss: {
+                                    dismiss()
+                                 })
                 //StockLineChartView(stock: stock)
                 
                 
                 MetricsScrollView(stock: stock)
                 Spacer()
                 NewsList(news: stock.news)
-                //NewsList(ticker: stock.profile.ticker)
             }
         }
         .task {
