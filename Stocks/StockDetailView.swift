@@ -52,7 +52,8 @@ struct StockDetailView: View {
                 
                 MetricsScrollView(stock: stock)
                 Spacer()
-                NewsList(ticker: stock.profile.ticker)
+                NewsList(news: stock.news)
+                //NewsList(ticker: stock.profile.ticker)
             }
         }
         .task {
