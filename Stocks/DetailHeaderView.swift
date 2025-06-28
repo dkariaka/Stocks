@@ -63,7 +63,6 @@ struct DetailHeaderView: View {
             logo: "https://logo.clearbit.com/apple.com",
             finnhubIndustry: "Technology"
         ),
-        historicalData: nil,
         news: [],
         metric: Stock.Metric(peNormalizedAnnual: 1, fiftyTwoWeekHigh: 1, fiftyTwoWeekLow: 1, tenDayAverageTradingVolume: 1, volume: 1)
     ), addToFavorites: {}, dismiss: {})

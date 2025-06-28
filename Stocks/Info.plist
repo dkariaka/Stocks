@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>ChartAPIKey</key>
+	<string>$(CHART_API_KEY)</string>
 	<key>StocksAPIKey</key>
 	<string>$(STOCKS_API_KEY)</string>
 </dict>

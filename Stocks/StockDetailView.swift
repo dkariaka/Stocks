@@ -29,16 +29,27 @@ struct StockDetailView: View {
                                  dismiss: {
                                     dismiss()
                                  })
-                //StockLineChartView(stock: stock)
                 
+                if !viewModel.chartData.isEmpty {
+                    StockChartView(dataPoints: viewModel.chartData)
+                        .frame(height: 180)
+                        .padding(.vertical)
+                } else {
+                    Text("Loading chart...")
+                        .foregroundColor(.gray)
+                        .padding()
+                }
                 
                 MetricsScrollView(stock: stock)
+
+                
                 Spacer()
                 NewsList(news: stock.news)
             }
         }
         .task {
             await viewModel.fetchStock(for: stock.profile.ticker)
+            await viewModel.fetchChart(for: stock.profile.ticker)
         }
         .padding(.horizontal)
     }
@@ -66,7 +77,6 @@ struct StockDetailView: View {
             logo: "https://logo.clearbit.com/apple.com",
             finnhubIndustry: "Technology"
         ),
-        historicalData: nil,
         news: [
             Stock.News(
                 category: "Technology",

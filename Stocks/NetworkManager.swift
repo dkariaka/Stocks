@@ -25,38 +25,45 @@ enum NetworkError: Error, LocalizedError {
 
 struct NetworkManager {
     static let shared = NetworkManager()
-    private let apiToken = Bundle.main.object(forInfoDictionaryKey: "StocksAPIKey") as! String//"d0ebrkpr01qj9mg5vtdgd0ebrkpr01qj9mg5vte0"
+    private let stockApiToken = Bundle.main.object(forInfoDictionaryKey: "StocksAPIKey") as! String
+    private let chartApiToken = Bundle.main.object(forInfoDictionaryKey: "ChartAPIKey") as! String
 
     private init() {}
     
     private func performRequest<T: Codable>(url: URL) async throws -> T {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw NetworkError.invalidResponse(statusCode: 0)
-            }
-            guard httpResponse.statusCode == 200 else {
-                throw NetworkError.invalidResponse(statusCode: httpResponse.statusCode)
-            }
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let result = try decoder.decode(T.self, from: data)
-                return result
-            } catch {
-                throw NetworkError.decodingError(error)
-            }
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NetworkError.invalidResponse(statusCode: 0)
         }
+        guard httpResponse.statusCode == 200 else {
+            throw NetworkError.invalidResponse(statusCode: httpResponse.statusCode)
+        }
+        
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("Full API response: \(jsonString)")
+        }
+
+    
+        do {
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let result = try decoder.decode(T.self, from: data)
+            return result
+        } catch {
+            throw NetworkError.decodingError(error)
+        }
+    }
     
 
     func fetchProfile(for stock: String) async throws -> Stock.Profile {
-        let link = "https://finnhub.io/api/v1/stock/profile2?symbol=\(stock)&token=\(apiToken)"
+        let link = "https://finnhub.io/api/v1/stock/profile2?symbol=\(stock)&token=\(stockApiToken)"
         
         guard let url = URL(string: link) else { throw NetworkError.invalidURL }
         return try await performRequest(url: url)
     }
 
     func fetchCurrentPrice(for stock: String) async throws -> Stock.Price {
-        let link = "https://finnhub.io/api/v1/quote?symbol=\(stock)&token=\(apiToken)"
+        let link = "https://finnhub.io/api/v1/quote?symbol=\(stock)&token=\(stockApiToken)"
         guard let url = URL(string: link) else { throw NetworkError.invalidURL }
         return try await performRequest(url: url)
     }
@@ -64,26 +71,21 @@ struct NetworkManager {
     func fetchNews(for stock: String) async throws -> [Stock.News] { 
         let from = formatDate(daysAgo(1))
         let to = formatDate(Date())
-        let link = "https://finnhub.io/api/v1/company-news?symbol=\(stock)&from=\(from)&to=\(to)&token=\(apiToken)"//2025-06-17   2025-06-10
+        let link = "https://finnhub.io/api/v1/company-news?symbol=\(stock)&from=\(from)&to=\(to)&token=\(stockApiToken)"
         guard let url = URL(string: link) else { throw NetworkError.invalidURL }
         return try await performRequest(url: url)
     }
 
     func fetchMetric(for stock: String) async throws -> MetricResponse {
-        let link = "https://finnhub.io/api/v1/stock/metric?symbol=\(stock)&metric=all&token=\(apiToken)"
+        let link = "https://finnhub.io/api/v1/stock/metric?symbol=\(stock)&metric=all&token=\(stockApiToken)"
         guard let url = URL(string: link) else { throw NetworkError.invalidURL }
         return try await performRequest(url: url)
     }
     
-    func fetchHistoricalData(for stock: String) async throws -> Stock.HistoricalData {
-        let now = Date()
-        let oneMonthAgo = Calendar.current.date(byAdding: .month, value: -1, to: now)!
-
-        let from = Int(oneMonthAgo.timeIntervalSince1970)
-        let to = Int(now.timeIntervalSince1970)
-        
-        let link = "https://finnhub.io/api/v1/stock/candle?symbol=\(stock)&resolution=D&from=\(Int(from))&to=\(Int(to))&token=\(apiToken)"
+    func fetchHistoricalData(for stock: String) async throws -> StockChartData {
+        let link = "https://api.twelvedata.com/time_series?symbol=\(stock)&interval=1day&outputsize=30&apikey=\(chartApiToken)"
         guard let url = URL(string: link) else { throw NetworkError.invalidURL }
+        let (data, _) = try await URLSession.shared.data(from: url)
         return try await performRequest(url: url)
     }
     

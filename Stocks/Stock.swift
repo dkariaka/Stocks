@@ -18,7 +18,6 @@ struct Stock: Codable, Identifiable, Equatable {
     
     var currentPrice: Price
     var profile: Profile
-    var historicalData: HistoricalData?
     var news: [News]
     var metric: Metric
     
@@ -56,15 +55,6 @@ struct Stock: Codable, Identifiable, Equatable {
         var url: String
     }
     
-    struct HistoricalData: Codable {
-        var c: [Double]
-        var h: [Double]
-        var l: [Double]
-        var o: [Double]
-        var t: [Int]
-        var v: [Int]
-    }
-    
     struct Metric: Codable {
         var peNormalizedAnnual: Double?
         var fiftyTwoWeekHigh: Double?
@@ -87,13 +77,3 @@ struct MetricResponse: Codable {
     let metric: Stock.Metric
 }
 
-extension Stock.HistoricalData {
-    var chartEntries: [ChartDataEntry] {
-        zip(t, c).map { timestamp, closePrice in
-            let x = Double(timestamp)
-            let y = closePrice
-            return ChartDataEntry(x: x, y: y)
-        }
-        .sorted(by: { $0.x < $1.x }) 
-    }
-}

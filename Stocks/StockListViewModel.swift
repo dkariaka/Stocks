@@ -68,7 +68,6 @@ class StockListViewModel: ObservableObject {
             let stock = Stock(
                 currentPrice: try await price,
                 profile: try await profile,
-                historicalData: nil,
                 news: try await news,
                 metric: try await metricResponse.metric
             )
@@ -90,7 +89,6 @@ class StockListViewModel: ObservableObject {
         return try await Stock(
             currentPrice: price,
             profile: profile,
-            historicalData: nil,
             news: news,
             metric: metric.metric
         )

@@ -11,6 +11,7 @@ class StockDetailViewModel: ObservableObject {
     @Published var stock: Stock?
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    @Published var chartData: [ChartPoint] = []
     
     private let persistence = PersistenceManager.shared
 
@@ -39,12 +40,10 @@ class StockDetailViewModel: ObservableObject {
             async let price = networkManager.fetchCurrentPrice(for: ticker)
             async let news = networkManager.fetchNews(for: ticker)
             async let metricResponse = networkManager.fetchMetric(for: ticker)
-            //async let historicalData = networkManager.fetchHistoricalData(for: ticker)
 
             let stock = Stock(
                 currentPrice: try await price,
                 profile: try await profile,
-                historicalData: nil,        //try await historicalData,
                 news: try await news,
                 metric: try await metricResponse.metric
             )
@@ -57,5 +56,16 @@ class StockDetailViewModel: ObservableObject {
         isLoading = false
     }
     
+    @MainActor
+    func fetchChart(for ticker: String) async {
+        do {
+            let response = try await networkManager.fetchHistoricalData(for: ticker)
+            print("Chart data received: \(response)")
+            self.chartData = response.chartPoints
+            print("Parsed chart points count: \(self.chartData.count)")
+        } catch {
+            print("Failed to load chart data: \(error)")
+        }
+    }
 
 }
