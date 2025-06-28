@@ -31,9 +31,8 @@ struct StockDetailView: View {
                                  })
                 
                 if !viewModel.chartData.isEmpty {
-                    StockChartView(dataPoints: viewModel.chartData)
+                    StockChartView(dataPoints: viewModel.chartData, interval: .oneMonth)
                         .frame(height: 180)
-                        .padding(.vertical)
                 } else {
                     Text("Loading chart...")
                         .foregroundColor(.gray)

@@ -8,8 +8,40 @@
 import SwiftUI
 import DGCharts
 
+enum ChartInterval {
+    case oneDay, oneWeek, oneMonth, threeMonths, sixMonths, oneYear, max
+}
+
+final class DateValueFormatter: AxisValueFormatter {
+    private let dateFormatter: DateFormatter
+    private let interval: ChartInterval
+
+    init(interval: ChartInterval) {
+        self.interval = interval
+        self.dateFormatter = DateFormatter()
+
+        switch interval {
+        case .oneDay:
+            dateFormatter.dateFormat = "HH:mm"
+        case .oneWeek, .oneMonth:
+            dateFormatter.dateFormat = "d MMM"
+        case .threeMonths, .sixMonths, .oneYear:
+            dateFormatter.dateFormat = "MMM yyyy"
+        case .max:
+            dateFormatter.dateFormat = "yyyy"
+        }
+    }
+
+    func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+        let date = Date(timeIntervalSince1970: value)
+        return dateFormatter.string(from: date)
+    }
+}
+
+
 struct StockChartView: UIViewRepresentable {
     let dataPoints: [ChartPoint]
+    let interval: ChartInterval
 
     func makeUIView(context: Context) -> LineChartView {
         let chartView = LineChartView()
@@ -41,6 +73,7 @@ struct StockChartView: UIViewRepresentable {
         }
 
         uiView.data = LineChartData(dataSet: dataSet)
+        uiView.xAxis.valueFormatter = DateValueFormatter(interval: interval)
     }
 }
 
@@ -53,7 +86,7 @@ struct StockChartView: UIViewRepresentable {
         ChartPoint(date: Date(), close: 158)
     ]
 
-    return StockChartView(dataPoints: testPoints)
+    return StockChartView(dataPoints: testPoints, interval: .oneMonth)
         .frame(height: 180)
 }
 
