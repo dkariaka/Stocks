@@ -24,14 +24,22 @@ struct StockChartView: UIViewRepresentable {
     func updateUIView(_ uiView: LineChartView, context: Context) {
         let entries = dataPoints.map { ChartDataEntry(x: $0.date.timeIntervalSince1970, y: $0.close) }
 
-        let dataSet = LineChartDataSet(entries: entries, label: "Price")
-        dataSet.colors = [.systemBlue]
-        dataSet.circleColors = [.systemBlue]
-        dataSet.circleRadius = 3
+        let dataSet = LineChartDataSet(entries: entries)
+        dataSet.drawCirclesEnabled = false
+        dataSet.mode = .linear
+        dataSet.lineWidth = 2
         dataSet.drawValuesEnabled = false
+        dataSet.drawFilledEnabled = true
+        dataSet.fillAlpha = 0.2
 
-        let data = LineChartData(dataSet: dataSet)
-        uiView.data = data
+        if let first = dataPoints.last?.close, let last = dataPoints.first?.close {
+            let isGrowing = first < last
+            let color = isGrowing ? UIColor.systemGreen : UIColor.systemRed
+            dataSet.setColor(color)
+            dataSet.fillColor = color
+        }
+
+        uiView.data = LineChartData(dataSet: dataSet)
     }
 }
 
@@ -45,7 +53,7 @@ struct StockChartView: UIViewRepresentable {
     ]
 
     return StockChartView(dataPoints: testPoints)
-        .frame(height: 300)
+        .frame(height: 180)
 }
 
 

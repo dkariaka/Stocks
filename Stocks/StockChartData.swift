@@ -50,8 +50,6 @@ extension StockChartData {
     }
 }
 
-
-
 extension DateFormatter {
     static let chart: DateFormatter = {
         let formatter = DateFormatter()

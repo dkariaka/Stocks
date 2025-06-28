@@ -16,7 +16,7 @@ enum NetworkError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL: return "Неверный URL запроса"
-        case .invalidResponse(let statusCode): return "Ошибка сервера (код: \(statusCode))"//: return "Ошибка сервера"
+        case .invalidResponse(let statusCode): return "Ошибка сервера (код: \(statusCode))"
         case .noData: return "Данные не получены"
         case .decodingError: return "Ошибка обработки данных"
         }
@@ -38,11 +38,6 @@ struct NetworkManager {
         guard httpResponse.statusCode == 200 else {
             throw NetworkError.invalidResponse(statusCode: httpResponse.statusCode)
         }
-        
-        if let jsonString = String(data: data, encoding: .utf8) {
-            print("Full API response: \(jsonString)")
-        }
-
     
         do {
             let decoder = JSONDecoder()
@@ -85,7 +80,6 @@ struct NetworkManager {
     func fetchHistoricalData(for stock: String) async throws -> StockChartData {
         let link = "https://api.twelvedata.com/time_series?symbol=\(stock)&interval=1day&outputsize=30&apikey=\(chartApiToken)"
         guard let url = URL(string: link) else { throw NetworkError.invalidURL }
-        let (data, _) = try await URLSession.shared.data(from: url)
         return try await performRequest(url: url)
     }
     
