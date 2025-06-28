@@ -49,7 +49,7 @@ class StockDetailViewModel: ObservableObject {
 
             self.stock = stock
         } catch {
-            errorMessage = (error as? NetworkError)?.errorDescription ?? "Unknown error"
+            errorMessage = (error as? Errors)?.rawValue ?? "Unknown error"
         }
 
         isLoading = false

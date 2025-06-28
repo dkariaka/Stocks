@@ -32,6 +32,7 @@ struct StockChartView: UIViewRepresentable {
         dataSet.drawFilledEnabled = true
         dataSet.fillAlpha = 0.2
 
+
         if let first = dataPoints.last?.close, let last = dataPoints.first?.close {
             let isGrowing = first < last
             let color = isGrowing ? UIColor.systemGreen : UIColor.systemRed

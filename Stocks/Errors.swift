@@ -9,4 +9,8 @@ import Foundation
 
 enum Errors: String, Error {
     case smthBad = "Just to know"
+    case invalidURL = "invalid URL"
+    case invalidResponse = "invalid response"
+    case noData = "no data"
+    case decodingError = "error decoding data"
 }

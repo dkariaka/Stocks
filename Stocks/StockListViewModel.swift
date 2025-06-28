@@ -75,7 +75,7 @@ class StockListViewModel: ObservableObject {
             selectedStock = stock
             
         } catch {
-            errorMessage = (error as? NetworkError)?.errorDescription ?? "Unknown error"
+            errorMessage = (error as? Errors)?.rawValue ?? "Unknown error"
         }
         isLoading = false
     }

@@ -7,22 +7,6 @@
 
 import Foundation
 
-enum NetworkError: Error, LocalizedError {
-    case invalidURL
-    case invalidResponse(statusCode: Int)
-    case noData
-    case decodingError(Error)
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL: return "Неверный URL запроса"
-        case .invalidResponse(let statusCode): return "Ошибка сервера (код: \(statusCode))"
-        case .noData: return "Данные не получены"
-        case .decodingError: return "Ошибка обработки данных"
-        }
-    }
-}
-
 struct NetworkManager {
     static let shared = NetworkManager()
     private let stockApiToken = Bundle.main.object(forInfoDictionaryKey: "StocksAPIKey") as! String
@@ -33,10 +17,10 @@ struct NetworkManager {
     private func performRequest<T: Codable>(url: URL) async throws -> T {
         let (data, response) = try await URLSession.shared.data(from: url)
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw NetworkError.invalidResponse(statusCode: 0)
+            throw Errors.invalidResponse
         }
         guard httpResponse.statusCode == 200 else {
-            throw NetworkError.invalidResponse(statusCode: httpResponse.statusCode)
+            throw Errors.invalidResponse
         }
     
         do {
@@ -45,7 +29,7 @@ struct NetworkManager {
             let result = try decoder.decode(T.self, from: data)
             return result
         } catch {
-            throw NetworkError.decodingError(error)
+            throw Errors.decodingError
         }
     }
     
@@ -53,13 +37,13 @@ struct NetworkManager {
     func fetchProfile(for stock: String) async throws -> Stock.Profile {
         let link = "https://finnhub.io/api/v1/stock/profile2?symbol=\(stock)&token=\(stockApiToken)"
         
-        guard let url = URL(string: link) else { throw NetworkError.invalidURL }
+        guard let url = URL(string: link) else { throw Errors.invalidURL }
         return try await performRequest(url: url)
     }
 
     func fetchCurrentPrice(for stock: String) async throws -> Stock.Price {
         let link = "https://finnhub.io/api/v1/quote?symbol=\(stock)&token=\(stockApiToken)"
-        guard let url = URL(string: link) else { throw NetworkError.invalidURL }
+        guard let url = URL(string: link) else { throw Errors.invalidURL }
         return try await performRequest(url: url)
     }
 
@@ -67,19 +51,19 @@ struct NetworkManager {
         let from = formatDate(daysAgo(1))
         let to = formatDate(Date())
         let link = "https://finnhub.io/api/v1/company-news?symbol=\(stock)&from=\(from)&to=\(to)&token=\(stockApiToken)"
-        guard let url = URL(string: link) else { throw NetworkError.invalidURL }
+        guard let url = URL(string: link) else { throw Errors.invalidURL }
         return try await performRequest(url: url)
     }
 
     func fetchMetric(for stock: String) async throws -> MetricResponse {
         let link = "https://finnhub.io/api/v1/stock/metric?symbol=\(stock)&metric=all&token=\(stockApiToken)"
-        guard let url = URL(string: link) else { throw NetworkError.invalidURL }
+        guard let url = URL(string: link) else { throw Errors.invalidURL }
         return try await performRequest(url: url)
     }
     
     func fetchHistoricalData(for stock: String) async throws -> StockChartData {
         let link = "https://api.twelvedata.com/time_series?symbol=\(stock)&interval=1day&outputsize=30&apikey=\(chartApiToken)"
-        guard let url = URL(string: link) else { throw NetworkError.invalidURL }
+        guard let url = URL(string: link) else { throw Errors.invalidURL }
         return try await performRequest(url: url)
     }
     
