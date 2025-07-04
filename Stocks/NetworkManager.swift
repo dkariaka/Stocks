@@ -61,8 +61,8 @@ struct NetworkManager {
         return try await performRequest(url: url)
     }
     
-    func fetchHistoricalData(for stock: String) async throws -> StockChartData {
-        let link = "https://api.twelvedata.com/time_series?symbol=\(stock)&interval=1day&outputsize=30&apikey=\(chartApiToken)"
+    func fetchHistoricalData(for stock: String, interval: ChartInterval) async throws -> StockChartData {
+        let link = "https://api.twelvedata.com/time_series?symbol=\(stock)&interval=\(interval.appInterval)&outputsize=\(interval.outputSize)&apikey=\(chartApiToken)"
         guard let url = URL(string: link) else { throw Errors.invalidURL }
         return try await performRequest(url: url)
     }
@@ -79,3 +79,5 @@ struct NetworkManager {
         Calendar.current.date(byAdding: .day, value: -days, to: Date()) ?? Date()
     }
 }
+
+

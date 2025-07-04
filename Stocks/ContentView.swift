@@ -12,7 +12,15 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            StockList(viewModel: viewModel)
+            StockList(stocks: viewModel.favoriteStocks,
+                      onDelete: { indexSet in
+                        Task {
+                            await viewModel.deleteStocks(at: indexSet)
+                        }
+                      },
+                      onSelect: { stock in
+                          viewModel.selectedStock = stock
+                      })
                 .background(Color.clear)
                 .scrollContentBackground(.hidden)
                 .navigationTitle("Stocks")
@@ -20,6 +28,11 @@ struct ContentView: View {
                 .onSubmit(of: .search) {
                     Task {
                         await viewModel.fetchStock(for: viewModel.searchText.uppercased())
+                    }
+                }
+                .onAppear {
+                    Task {
+                        await viewModel.fetchFavoriteStocks()
                     }
                 }
                 .sheet(item: $viewModel.selectedStock) { stock in

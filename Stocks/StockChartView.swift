@@ -8,10 +8,6 @@
 import SwiftUI
 import DGCharts
 
-enum ChartInterval {
-    case oneDay, oneWeek, oneMonth, threeMonths, sixMonths, oneYear, max
-}
-
 final class DateValueFormatter: AxisValueFormatter {
     private let dateFormatter: DateFormatter
     private let interval: ChartInterval
@@ -27,7 +23,7 @@ final class DateValueFormatter: AxisValueFormatter {
             dateFormatter.dateFormat = "d MMM"
         case .threeMonths, .sixMonths, .oneYear:
             dateFormatter.dateFormat = "MMM yyyy"
-        case .max:
+        case .yearToDate:
             dateFormatter.dateFormat = "yyyy"
         }
     }

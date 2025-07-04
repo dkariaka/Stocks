@@ -11,6 +11,7 @@ struct StockDetailView: View {
     @StateObject private var viewModel = StockDetailViewModel()
     let stock: Stock
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedInterval: ChartInterval = .oneMonth
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -29,26 +30,28 @@ struct StockDetailView: View {
                                  dismiss: {
                                     dismiss()
                                  })
-                
-                if !viewModel.chartData.isEmpty {
-                    StockChartView(dataPoints: viewModel.chartData, interval: .oneMonth)
-                        .frame(height: 180)
-                } else {
-                    Text("Loading chart...")
-                        .foregroundColor(.gray)
-                        .padding()
+                ChartIntervalSelector(selectedInterval: $selectedInterval)
+                VStack {
+                    if !viewModel.chartData.isEmpty {
+                        StockChartView(dataPoints: viewModel.chartData, interval: .oneMonth)
+                            .frame(height: 180)
+                    } else {
+                        Text("No chart data available")
+                    }
                 }
-                
+                .onChange(of: selectedInterval) {
+                    Task {
+                        await viewModel.fetchChart(for: stock.profile.ticker, interval: selectedInterval)
+                    }
+                }
                 MetricsScrollView(stock: stock)
-
-                
                 Spacer()
                 NewsList(news: stock.news)
             }
         }
         .task {
             await viewModel.fetchStock(for: stock.profile.ticker)
-            await viewModel.fetchChart(for: stock.profile.ticker)
+            await viewModel.fetchChart(for: stock.profile.ticker, interval: selectedInterval)
         }
         .padding(.horizontal)
     }

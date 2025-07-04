@@ -8,40 +8,28 @@
 import SwiftUI
 
 struct StockList: View {
-    @ObservedObject var viewModel: StockListViewModel
+    var stocks: [Stock]
+    var onDelete: (IndexSet) -> Void
+    var onSelect: (Stock) -> Void
 
     var body: some View {
         VStack {
-            if viewModel.isLoading {
-                ProgressView()
-                    .padding()
-            } else if let error = viewModel.errorMessage {
-                Text(error)
-                    .foregroundColor(.red)
-                    .padding()
+            if stocks.isEmpty {
+                Text("No favorite stocks")
             } else {
                 List {
                     Section(header: Text("My Symbols")) {
-                        ForEach(viewModel.favoriteStocks, id: \.profile.ticker) { stock in
+                        ForEach(stocks, id: \.profile.ticker) { stock in
                             Button(action: {
-                                viewModel.selectedStock = stock
+                                onSelect(stock)
                             }) {
                                 StockCell(stock: stock)
                             }
                         }
-                        .onDelete(perform: { indexSet in
-                            Task {
-                                await viewModel.deleteStocks(at: indexSet)
-                            }
-                        })
+                        .onDelete(perform: onDelete)
                     }
                 }
                 .listStyle(.plain)
-            }
-        }
-        .onAppear {
-            Task {
-                await viewModel.fetchFavoriteStocks()
             }
         }
     }
@@ -49,5 +37,58 @@ struct StockList: View {
 
 
 #Preview {
-    StockList(viewModel: StockListViewModel())
+    StockList(
+        stocks: [
+            Stock(
+                currentPrice: Stock.Price(
+                    c: 172.15,
+                    d: 1.23,
+                    dp: 0.72,
+                    h: 173.0,
+                    l: 170.5,
+                    o: 171.0,
+                    pc: 170.92
+                ),
+                profile: Stock.Profile(
+                    name: "Apple Inc.",
+                    ticker: "AAPL",
+                    exchange: "NASDAQ",
+                    currency: "USD",
+                    ipo: "1980-12-12",
+                    marketCapitalization: 2500000,
+                    shareOutstanding: 16700,
+                    logo: "https://logo.clearbit.com/apple.com",
+                    finnhubIndustry: "Technology"
+                ),
+                news: [],
+                metric: Stock.Metric(peNormalizedAnnual: 1, fiftyTwoWeekHigh: 1, fiftyTwoWeekLow: 1, tenDayAverageTradingVolume: 1, volume: 1)
+            ),
+            Stock(
+                currentPrice: Stock.Price(
+                    c: 172.15,
+                    d: 1.23,
+                    dp: 0.72,
+                    h: 173.0,
+                    l: 170.5,
+                    o: 171.0,
+                    pc: 170.92
+                ),
+                profile: Stock.Profile(
+                    name: "Apple Inc.",
+                    ticker: "AAPL",
+                    exchange: "NASDAQ",
+                    currency: "USD",
+                    ipo: "1980-12-12",
+                    marketCapitalization: 2500000,
+                    shareOutstanding: 16700,
+                    logo: "https://logo.clearbit.com/apple.com",
+                    finnhubIndustry: "Technology"
+                ),
+                news: [],
+                metric: Stock.Metric(peNormalizedAnnual: 1, fiftyTwoWeekHigh: 1, fiftyTwoWeekLow: 1, tenDayAverageTradingVolume: 1, volume: 1)
+            )
+        ],
+        onDelete: { _ in },
+        onSelect: { _ in }
+    )
 }

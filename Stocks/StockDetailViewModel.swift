@@ -23,6 +23,7 @@ class StockDetailViewModel: ObservableObject {
         guard let stock = stock else { return }
         do {
             try await persistence.save(stock)
+            
         } catch {
             errorMessage = "Error adding to favorites"
         }
@@ -56,12 +57,14 @@ class StockDetailViewModel: ObservableObject {
     }
     
     @MainActor
-    func fetchChart(for ticker: String) async {
+    func fetchChart(for ticker: String, interval: ChartInterval) async {
+        chartData = []
         do {
-            let response = try await networkManager.fetchHistoricalData(for: ticker)
+            let response = try await networkManager.fetchHistoricalData(for: ticker, interval: interval)
             self.chartData = response.chartPoints
         } catch {
             print("Failed to load chart data: \(error)")
+            chartData = []
         }
     }
 

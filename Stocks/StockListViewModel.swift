@@ -14,10 +14,11 @@ class StockListViewModel: ObservableObject {
     @Published var selectedStock: Stock?
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    //@Published var needRefresh: Bool = true
 
     private let networkManager = NetworkManager.shared
     private var cancellables = Set<AnyCancellable>()
-    let defaultTickers = ["AAPL", "MSFT", "GOOGL", "NVDA", "KO", "MCD", "PEP"]
+    //let defaultTickers = ["AAPL", "MSFT", "GOOGL", "NVDA", "KO", "MCD", "PEP"]
 
     
     @MainActor
