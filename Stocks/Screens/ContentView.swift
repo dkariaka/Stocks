@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = StockListViewModel()
+    @State private var didModifyFavorites = false
 
     var body: some View {
         NavigationStack {
@@ -30,20 +31,20 @@ struct ContentView: View {
                         await viewModel.fetchStock(for: viewModel.searchText.uppercased())
                     }
                 }
-                .onAppear {
-                    Task {
+                .task {
+                    if viewModel.favoriteStocks.isEmpty {
                         await viewModel.fetchFavoriteStocks()
                     }
                 }
-                .sheet(item: $viewModel.selectedStock) { stock in
-                    StockDetailView(stock: stock)
-                }
-                .onChange(of: viewModel.selectedStock) { oldValue, newValue in
-                    if oldValue != nil && newValue == nil {
+                .sheet(item: $viewModel.selectedStock, onDismiss: {
+                    if didModifyFavorites {
                         Task {
                             await viewModel.fetchFavoriteStocks()
+                            didModifyFavorites = false // сбрасываем флаг
                         }
                     }
+                }) { stock in
+                    StockDetailView(stock: stock, didModifyFavorites: $didModifyFavorites)
                 }
         }
     }

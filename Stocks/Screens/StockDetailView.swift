@@ -12,6 +12,7 @@ struct StockDetailView: View {
     let stock: Stock
     @Environment(\.dismiss) private var dismiss
     @State private var selectedInterval: ChartInterval = .oneMonth
+    @Binding var didModifyFavorites: Bool
     
 
     var body: some View {
@@ -27,7 +28,7 @@ struct StockDetailView: View {
                 DetailHeaderView(stock: stock,
                                  addToFavorites: {
                                     await viewModel.addToFavorites()
-                                    
+                                    didModifyFavorites = true
                                  },
                                  dismiss: {
                                     dismiss()
@@ -95,5 +96,6 @@ struct StockDetailView: View {
             )
         ],
         metric: Stock.Metric(peNormalizedAnnual: 1, fiftyTwoWeekHigh: 1, fiftyTwoWeekLow: 1, tenDayAverageTradingVolume: 1, volume: 1) 
-    ))
+    ),
+                    didModifyFavorites: .constant(false))
 }
