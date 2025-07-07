@@ -17,14 +17,14 @@ struct StockDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if viewModel.isLoading {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-            } else if let error = viewModel.errorMessage {
-                Text(error)
-                    .foregroundColor(.red)
-                    .padding()
-            } else {
+//            if viewModel.isLoading {
+//                ProgressView()
+//                    .frame(maxWidth: .infinity)
+//            } else if let error = viewModel.errorMessage {
+//                Text(error)
+//                    .foregroundColor(.red)
+//                    .padding()
+//            } else {
                 DetailHeaderView(stock: stock,
                                  addToFavorites: {
                                     await viewModel.addToFavorites()
@@ -50,7 +50,7 @@ struct StockDetailView: View {
                 MetricsScrollView(stock: stock)
                 Spacer()
                 NewsList(news: stock.news)
-            }
+            //}
         }
         .task {
             await viewModel.fetchStock(for: stock.profile.ticker)

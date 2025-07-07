@@ -28,7 +28,7 @@ struct StockChartData: Codable {
     }
 }
 
-struct ChartPoint: Identifiable {
+struct ChartPoint: Identifiable, Codable {
     let id = UUID()
     let date: Date
     let close: Double

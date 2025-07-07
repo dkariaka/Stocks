@@ -17,7 +17,6 @@ class StockListViewModel: ObservableObject {
 
     private let networkManager = NetworkManager.shared
 
-    
     @MainActor
     func deleteStocks(at offsets: IndexSet) async {
         let stocksToRemove = offsets.map { favoriteStocks[$0] }
@@ -33,17 +32,17 @@ class StockListViewModel: ObservableObject {
         }
     }
 
-    
-    
     @MainActor
     func fetchFavoriteStocks() async {
         isLoading = true
         errorMessage = nil
         favoriteStocks.removeAll()
+        
 
         do {
             let saved = try await PersistenceManager.shared.getSavedStocks()
             favoriteStocks = saved
+            
         } catch {
             errorMessage = "Error loading favorites"
         }
@@ -51,9 +50,6 @@ class StockListViewModel: ObservableObject {
         isLoading = false
     }
 
-    
-    
-    
     @MainActor
     func fetchStock(for ticker: String) async {
         isLoading = true
@@ -77,19 +73,5 @@ class StockListViewModel: ObservableObject {
             errorMessage = (error as? Errors)?.rawValue ?? "Unknown error"
         }
         isLoading = false
-    }
-
-    private func fetchStockData(for ticker: String) async throws -> Stock {
-        async let profile = networkManager.fetchProfile(for: ticker)
-        async let price = networkManager.fetchCurrentPrice(for: ticker)
-        async let news = networkManager.fetchNews(for: ticker)
-        async let metric = networkManager.fetchMetric(for: ticker)
-        
-        return try await Stock(
-            currentPrice: price,
-            profile: profile,
-            news: news,
-            metric: metric.metric
-        )
     }
 }

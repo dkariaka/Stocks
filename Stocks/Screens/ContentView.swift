@@ -40,7 +40,7 @@ struct ContentView: View {
                     if didModifyFavorites {
                         Task {
                             await viewModel.fetchFavoriteStocks()
-                            didModifyFavorites = false // сбрасываем флаг
+                            didModifyFavorites = false 
                         }
                     }
                 }) { stock in

@@ -34,6 +34,13 @@ class StockDetailViewModel: ObservableObject {
     func fetchStock(for ticker: String) async {
         isLoading = true
         errorMessage = nil
+        
+        let cacheFileName = "stock-\(ticker).json"
+        
+        if let cachedStock = CacheManager.shared.load(Stock.self, from: cacheFileName) {
+            self.stock = cachedStock
+            print("Loaded stock from cache")
+        }
 
         do {
             async let profile = networkManager.fetchProfile(for: ticker)
@@ -49,19 +56,37 @@ class StockDetailViewModel: ObservableObject {
             )
 
             self.stock = stock
+            CacheManager.shared.save(stock, to: cacheFileName)
+            print("Stock updated from API and cached")
         } catch {
             errorMessage = (error as? Errors)?.rawValue ?? "Unknown error"
+            if self.stock == nil {
+                errorMessage = "Unable to load data. Please check your internet connection."
+            }
         }
 
         isLoading = false
     }
-    
+
     @MainActor
     func fetchChart(for ticker: String, interval: ChartInterval) async {
         chartData = []
+        
+        let cacheFileName = "chart-\(ticker)-\(interval.rawValue).json"
+        
+        if CacheManager.shared.isCacheValid(for: cacheFileName, maxAgeMinutes: 1440),
+           let cachedChart = CacheManager.shared.load([ChartPoint].self, from: cacheFileName) {
+            chartData = cachedChart
+            print("Loaded chart data from cache")
+            return
+        }
+
         do {
             let response = try await networkManager.fetchHistoricalData(for: ticker, interval: interval)
             self.chartData = response.chartPoints
+            
+            CacheManager.shared.save(response.chartPoints, to: cacheFileName)
+            print("Saved chart data to cache")
         } catch {
             print("Failed to load chart data: \(error)")
             chartData = []
