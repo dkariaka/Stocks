@@ -12,7 +12,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            StockList(stocks: viewModel.favoriteStocks,
+            StockList(stocks: $viewModel.favoriteStocks,
                       onDelete: { indexSet in
                         Task {
                             await viewModel.deleteStocks(at: indexSet)

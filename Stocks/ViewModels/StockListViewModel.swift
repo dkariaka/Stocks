@@ -20,16 +20,17 @@ class StockListViewModel: ObservableObject {
     
     @MainActor
     func deleteStocks(at offsets: IndexSet) async {
-        for index in offsets {
-            let stockToRemove = favoriteStocks[index]
+        let stocksToRemove = offsets.map { favoriteStocks[$0] }
+        
+        favoriteStocks.remove(atOffsets: offsets)
+        
+        for stock in stocksToRemove {
             do {
-                try await PersistenceManager.shared.remowe(stockToRemove)
+                try await PersistenceManager.shared.remowe(stock)
             } catch {
                 print("Error while deleting: \(error)")
             }
         }
-        
-        await fetchFavoriteStocks()
     }
 
     

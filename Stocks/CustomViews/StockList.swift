@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StockList: View {
-    var stocks: [Stock]
+    @Binding var stocks: [Stock]
     var onDelete: (IndexSet) -> Void
     var onSelect: (Stock) -> Void
 
@@ -38,7 +38,7 @@ struct StockList: View {
 
 #Preview {
     StockList(
-        stocks: [
+        stocks: .constant([
             Stock(
                 currentPrice: Stock.Price(
                     c: 172.15,
@@ -87,7 +87,7 @@ struct StockList: View {
                 news: [],
                 metric: Stock.Metric(peNormalizedAnnual: 1, fiftyTwoWeekHigh: 1, fiftyTwoWeekLow: 1, tenDayAverageTradingVolume: 1, volume: 1)
             )
-        ],
+        ]),
         onDelete: { _ in },
         onSelect: { _ in }
     )

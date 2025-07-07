@@ -12,6 +12,7 @@ struct StockDetailView: View {
     let stock: Stock
     @Environment(\.dismiss) private var dismiss
     @State private var selectedInterval: ChartInterval = .oneMonth
+    
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -26,6 +27,7 @@ struct StockDetailView: View {
                 DetailHeaderView(stock: stock,
                                  addToFavorites: {
                                     await viewModel.addToFavorites()
+                                    
                                  },
                                  dismiss: {
                                     dismiss()
